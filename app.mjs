@@ -12,10 +12,6 @@ async function main() {
     try {
         const sequelize = await loadSequelize();
         const app = express();
-
-        
-        console.log("haha")
-        
         
         
         app.listen(3000, () => {
