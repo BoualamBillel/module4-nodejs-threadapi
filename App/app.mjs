@@ -1,4 +1,4 @@
-import { loadSequelize } from "./database.mjs";
+import { loadSequelize } from "../Helpers/database.mjs";
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
