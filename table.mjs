@@ -19,7 +19,7 @@ export function createTable(sequelize) {
             userId: DataTypes.INTEGER,
             postId: DataTypes.INTEGER
         });
-    
+     
         // Association
         User.hasMany(Post, { foreignKey: "userId", as: "posts" });
         Post.belongsTo(User);
