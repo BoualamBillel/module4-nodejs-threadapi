@@ -13,33 +13,7 @@ async function main() {
         const sequelize = await loadSequelize();
         const app = express();
 
-        // Creation des tables
-        const User = sequelize.define("user", {
-            username : DataTypes.TEXT,
-            email : DataTypes.TEXT,
-            password : DataTypes.TEXT
-        });
-
-        const Post = sequelize.define("post", {
-            title : DataTypes.TEXT,
-            content : DataTypes.TEXT,
-            userId : DataTypes.INTEGER
-        });
-
-        const Comment = sequelize.define("comment", {
-            content : DataTypes.TEXT,
-            userId : DataTypes.INTEGER,
-            postId : DataTypes.INTEGER
-        });
-
-        // Association
-        User.hasMany(Post, {foreignKey : "userId", as : "posts"});
-        Post.belongsTo(User);
-
-        Post.hasMany(Comment, {foreignKey : "postId", as : "comments"});
-
-        Comment.belongsTo(User);
-        Comment.belongsTo(Post);
+        
 
         
         
