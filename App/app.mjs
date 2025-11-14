@@ -1,4 +1,5 @@
 import { loadSequelize } from "../Helpers/database.mjs";
+import { createTable } from "../Helpers/tables.mjs";
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
@@ -11,6 +12,9 @@ async function main() {
     try {
         const sequelize = await loadSequelize();
         const app = express();
+
+        //Test
+        createTable(sequelize);
 
 
 
