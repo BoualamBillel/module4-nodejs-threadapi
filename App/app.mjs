@@ -1,5 +1,5 @@
 import { loadSequelize } from "../Helpers/database.mjs";
-import { addUser } from "../Helpers/crud.mjs";
+import { addUser, addPost, addComment } from "../Helpers/crud.mjs";
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
@@ -17,7 +17,11 @@ async function main() {
         const app = express();
 
         // Test
-        addUser(User,"test", "test@gmail.com", "b30");
+        await addUser(User,"test", "test@gmail.com", "b30");
+        await addPost(Post, "First Thread", "Premier Thread !", 1);
+        await addComment(Comment, "Cool", 1, 1);
+
+        
         
         
         app.listen(3000, () => {

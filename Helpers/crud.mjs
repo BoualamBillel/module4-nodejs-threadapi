@@ -7,11 +7,12 @@ import bcrypt from "bcrypt";
 // Create
 export async function addUser(User, username, email, password) {
     try {
-        await User.create({
+        const newUser = await User.create({
             username: username,
             email: email,
             password: await bcrypt.hash(password, 10)
         });
+        return newUser;
     } catch (error) {
         console.error(`Erreur lors de la création de l'utilisateur (${username}, ${email}) : `, error);
         throw error;
@@ -20,11 +21,12 @@ export async function addUser(User, username, email, password) {
 
 export async function addPost(Post, title, content, userId) {
     try {
-        await Post.create({
+        const newPost = await Post.create({
             title: title,
             content: content,
             userId: userId
         });
+        return newPost;
     } catch (error) {
         console.error(`Erreur lors de la création du post (${title}) : `, error);
         throw error;
@@ -33,11 +35,12 @@ export async function addPost(Post, title, content, userId) {
 
 export async function addComment(Comment, content, userId, postId) {
     try {
-        await Comment.create({
+        const newComment = await Comment.create({
             content: content,
             userId: userId,
             postId: postId
         });
+        return newComment;
     } catch (error) {
         console.error(`Erreur lors de la création du commentaire (${content}) : `, error);
         throw error;
