@@ -1,8 +1,7 @@
 # Installer les dépendances
 ```bash
-npm install --clean
+npm install
 ```
-
 
 # Lancer l'application
 ```bash
