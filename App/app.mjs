@@ -1,24 +1,20 @@
-import { loadSequelize } from "../Helpers/database.mjs";
-import { createTable } from "../Helpers/tables.mjs";
 import express from "express";
 import cors from "cors";
-import bcrypt from "bcrypt";
+import authRoutes from "../Routes/authRoutes.mjs";
+import postRoutes from "../Routes/postRoutes.mjs";
+import cookieParser from "cookie-parser";
 
-/**
- * Point d'entrée de l'application
- * Vous déclarer ici les routes de votre API REST
- */
 async function main() {
     try {
-        const sequelize = await loadSequelize();
+
         const app = express();
-
-        //Test
-        createTable(sequelize);
-
-
-
-
+        app.use(cors(
+          // VIDE A REMPLIR SELON BESOIN //  
+        ));
+        app.use(express.json());
+        app.use(cookieParser());
+        app.use(authRoutes); // Routes d'auth
+        app.use(postRoutes); // Routes post, comment
 
         app.listen(3000, () => {
             console.log("Serveur démarré sur http://localhost:3000");

@@ -1,5 +1,4 @@
 import { Sequelize, DataTypes } from "sequelize";
-import { loadSequelize } from "./database.mjs";
 
 /**
  * 
