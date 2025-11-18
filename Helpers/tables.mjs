@@ -30,7 +30,7 @@ export async function createTable(sequelize) {
 
         Comment.belongsTo(User);
         Comment.belongsTo(Post);
-        await sequelize.sync({force:true});
+        await sequelize.sync();
         return { User, Post, Comment };
 
     } catch (error) {
