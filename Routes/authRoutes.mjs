@@ -3,7 +3,6 @@ import { createTable } from "../Helpers/tables.mjs";
 import { loadSequelize } from "../Helpers/database.mjs";
 import bcrypt from "bcrypt";
 import { generateToken } from "../auth/auth.mjs";
-import cookieParser from "cookie-parser";
 
 
 const sequelize = await loadSequelize();
