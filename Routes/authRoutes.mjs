@@ -5,20 +5,20 @@ import bcrypt from "bcrypt";
 import { generateToken } from "../auth/auth.mjs";
 import cookieParser from "cookie-parser";
 
-const app = express();
-app.use(cookieParser());
+
 const sequelize = await loadSequelize();
-const User = await createTable(sequelize);
+const { User } = await createTable(sequelize);
+const router = express.Router();
 
 
-app.post("/register", async (req, res) => {
-    if (!req.body.username || !req.body.email || !req.body.password) {
+router.post("/register", async (req, res) => {
+    if (!req.body ||!req.body.username || !req.body.email || !req.body.password) {
         return res.status(400).json({ message: "Les champs : Username, E-mail et Password sont requis !" });
     }
 
-    const email = await User.findOn({ where: { email: req.body.email}});
+    const email = await User.findOne({ where: { email: req.body.email } });
     if (email) {
-        return res.status(400).json({ message: "Cet E-Mail existe deja"});
+        return res.status(400).json({ message: "Cet E-Mail existe deja" });
     }
 
     try {
@@ -36,16 +36,18 @@ app.post("/register", async (req, res) => {
         });
         res.status(201).json({ user: userSafe });
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: error.message });
+        console.error(error);
+        res.status(500).json({ message: "Erreur serveur"});
     }
 });
 
-app.post("/login", async (req, res) => {
-    if (!req.body.email || !req.body.password) {
-        return res.status(400).json({ message: "Les champs : E-mail et Password sont requis pour la connexion !" });
-    }
-    try {
+router.post("/login", async (req, res) => {
 
+    try {
+        if ( !req.body || !req.body.email || !req.body.password) {
+            return res.status(400).json({ message: "Les champs : E-mail et Password sont requis pour la connexion !" });
+        }
+        
         const user = await User.findOne({ where: { email: req.body.email } });
         if (!user) {
             return res.status(401).json({ message: "Identifiants incorrect" });
@@ -62,17 +64,20 @@ app.post("/login", async (req, res) => {
             sameSite: "strict",
             maxAge: 3600000
         });
-        res.status(201).json({ user: userSafe });
+        res.status(200).json({ user: userSafe });
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: error.message });
+        console.error(error);
+        res.status(500).json({ message: "Erreur serveur"});
     }
 });
 
-app.post("/logout", async (res, req) => {
+router.post("/logout", async (req, res) => {
     try {
         res.clearCookie("jwt");
         res.status(200).json({ message: "Déconnexion réussie." });
     } catch (error) {
-        res.status(500).json({ message: "Erreur serveur", error: error.message });
+        res.status(500).json({ message: "Erreur serveur."});
     }
 })
+
+export default router;
