@@ -19,10 +19,14 @@ router.post("/posts", verifyToken, async (req, res) => {
             "content": req.body.content,
             "userId": userId
         });
-        res.status(201).json({
-            "message": "Post crée avec succès",
-            "Post": post
-        });
+        if (post){
+            res.status(201).json({
+                "message": "Post crée avec succès",
+                "Post": post
+            });
+        } else {
+            res.status(404).json({comment: "Erreur lors de la création du post"});
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erreur serveur" });
@@ -34,8 +38,13 @@ router.get("/posts", async (req, res) => {
         const posts = await Post.findAll({
             include: [{ association: "comments" }]
         });
-
-        res.status(200).json(posts);
+        if (posts.length > 0) {
+            res.status(200).json({
+                AllPostsAndComments: posts
+            });
+        } else {
+            res.status(404).json({ message: "Erreur lors de la récupération de tout les posts et leurs commentaires" });
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erreur serveur" });
@@ -55,7 +64,7 @@ router.post("/posts/:postId/comments", verifyToken, async (req, res) => {
         res.status(201).json(comment);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Erreur serveur"});
+        res.status(500).json({ message: "Erreur serveur" });
     }
 });
 
@@ -95,7 +104,7 @@ router.get("/users/:userId/posts", async (req, res) => {
         if (userPosts.length > 0) {
             res.status(200).json(userPosts);
         } else {
-            res.status(404).json({message: "Erreur lors de la récupération des posts de l'utilisateur"});
+            res.status(404).json({ message: "Erreur lors de la récupération des posts de l'utilisateur" });
         }
     } catch (error) {
         console.error(error);
