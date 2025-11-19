@@ -19,7 +19,10 @@ router.post("/posts", verifyToken, async (req, res) => {
             "content": req.body.content,
             "userId": userId
         });
-        res.status(201).json(post);
+        res.status(201).json({
+            "message": "Post crée avec succès",
+            "Post": post
+        });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Erreur serveur" });
@@ -39,13 +42,10 @@ router.get("/posts", async (req, res) => {
     }
 });
 
-router.post("posts/:postId/comments", verifyToken, async (req, res) => {
+router.post("/posts/:postId/comments", verifyToken, async (req, res) => {
     try {
         if (!req.body || !req.body.content) {
             return res.status(400).json({ message: "Un commentaire doit avoir un contenu" });
-        }
-        if (!req.body.postId) {
-            return res.status(400).json({ message: "Post ID manquant" })
         }
         const comment = await Comment.create({
             "content": req.body.content,
@@ -55,7 +55,7 @@ router.post("posts/:postId/comments", verifyToken, async (req, res) => {
         res.status(201).json(comment);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: "Erreur serveur" });
+        res.status(500).json({ message: "Erreur serveur"});
     }
 });
 
