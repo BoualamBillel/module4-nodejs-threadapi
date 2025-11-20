@@ -1,12 +1,16 @@
 import { Sequelize } from "sequelize";
 
+import { createTable } from "./tables.mjs";
+export const sequelize = await loadSequelize();
+await createTable(sequelize);
+
 /**
  * 
  * @returns {Promise<Sequelize>}
  */
 export async function loadSequelize() {
     try {
-        const sequelize = await new Sequelize('thread-api', 'root', 'root', {
+        const sequelize = new Sequelize('thread-api', 'root', 'root', {
             dialect: "mysql",
             host: "127.0.0.1"
         });

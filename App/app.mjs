@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 
 async function main() {
     try {
-
+        
         const app = express();
         app.use(cors(
           // VIDE A REMPLIR SELON BESOIN //  

@@ -1,39 +1,63 @@
 import { Sequelize, DataTypes } from "sequelize";
 
+
 /**
  * 
  * @param {Sequelize} sequelize 
  */
 export async function createTable(sequelize) {
     try {
-        const User = sequelize.define("user", {
+        
+        const User = sequelize.define("User", {
             username: DataTypes.TEXT,
             email: DataTypes.TEXT,
             password: DataTypes.TEXT
         });
 
-        const Post = sequelize.define("post", {
+        const Post = sequelize.define("Post", {
             title: DataTypes.TEXT,
             content: DataTypes.TEXT
         });
 
-        const Comment = sequelize.define("comment", {
+        const Comment = sequelize.define("Comment", {
             content: DataTypes.TEXT,
         });
 
+        const Role = sequelize.define("Role", {
+            name: {
+                type:DataTypes.STRING,
+                unique : true
+            }
+        });
+
+
+
         // Association
-        User.hasMany(Post, { foreignKey: "userId", as: "posts" });
+        Role.hasMany(User, { foreignKey: "RoleId", as: "userRole" });
+        User.belongsTo(Role);
+
+        User.hasMany(Post, { foreignKey: "UserId", as: "posts" });
         Post.belongsTo(User);
 
-        Post.hasMany(Comment, { foreignKey: "postId", as: "comments" });
+        Post.hasMany(Comment, { foreignKey: "PostId", as: "comments" });
 
         Comment.belongsTo(User);
         Comment.belongsTo(Post);
         await sequelize.sync();
-        return { User, Post, Comment };
+
+        // Création des roles
+        await Role.findOrCreate({
+            where: { "name": "member" }
+        });
+        await Role.findOrCreate({
+            where: { "name": "admin" }
+        });
+
+        // Données de test
+        return sequelize.models;
 
     } catch (error) {
         console.error("Erreur lors de la création des tables SQL : ", error);
         throw error;
     }
-} 
+}   

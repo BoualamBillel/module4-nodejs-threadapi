@@ -1,31 +1,37 @@
 import express from "express";
-import { createTable } from "../Helpers/tables.mjs";
-import { loadSequelize } from "../Helpers/database.mjs";
 import bcrypt from "bcrypt";
 import { generateToken } from "../auth/auth.mjs";
+import { sequelize } from "../Helpers/database.mjs";
+const { User, Role } = sequelize.models;
 
-
-const sequelize = await loadSequelize();
-const { User } = await createTable(sequelize);
 const router = express.Router();
 
 
 router.post("/register", async (req, res) => {
-    if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
-        return res.status(400).json({ message: "Les champs : Username, E-mail et Password sont requis !" });
-    }
-
-    const email = await User.findOne({ where: { email: req.body.email } });
-    if (email) {
-        return res.status(400).json({ message: "Cet E-Mail existe deja" });
-    }
-
     try {
+        if (!req.body || !req.body.username || !req.body.email || !req.body.password) {
+            return res.status(400).json({ message: "Les champs : Username, E-mail et Password sont requis !" });
+        }
+
+        const email = await User.findOne({ where: { email: req.body.email } });
+        if (email) {
+            return res.status(400).json({ message: "Cet E-Mail existe deja" });
+        }
+
+        // Récupération des données du role Member
+        const memberRole = await Role.findOne({ where: { name: "member" } })
+        if (!memberRole) {
+            res.status(404).json({ message: "Erreur lors de la récupération du role membre" });
+        }
+
         const userCreated = await User.create({
             username: req.body.username,
             email: req.body.email,
-            password: await bcrypt.hash(req.body.password, 10)
+            password: await bcrypt.hash(req.body.password, 10),
+            roleId: memberRole.id
         });
+        // A supprimer
+        console.log(userCreated);
         const token = generateToken(userCreated);
         const { password, ...userSafe } = userCreated.get({ plain: true });
         res.cookie("jwt", token, {

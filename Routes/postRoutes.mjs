@@ -1,31 +1,31 @@
 import express from "express";
-import { createTable } from "../Helpers/tables.mjs";
-import { loadSequelize } from "../Helpers/database.mjs";
 import { verifyToken } from "../auth/jwtMiddleware.mjs";
+import { isAdmin, canDeleteComment, canDeletePost } from "../auth/jwtMiddleware.mjs";
+import { sequelize } from "../Helpers/database.mjs";
+const { Post, Comment } = sequelize.models;
 
-
-const sequelize = await loadSequelize();
-const { Post } = await createTable(sequelize);
-const { Comment } = await createTable(sequelize);
 
 const router = express.Router();
 
 router.post("/posts", verifyToken, async (req, res) => {
     try {
         const userId = req.user.id;
+        if (userId == null) {
+            return res.status(200).json({ message: "Erreur lors de la recuperation de l'userId" });
+        }
 
         const post = await Post.create({
             "title": req.body.title,
             "content": req.body.content,
-            "userId": userId
+            "UserId": userId
         });
-        if (post){
+        if (post) {
             res.status(201).json({
                 "message": "Post crée avec succès",
                 "Post": post
             });
         } else {
-            res.status(404).json({comment: "Erreur lors de la création du post"});
+            res.status(404).json({ comment: "Erreur lors de la création du post" });
         }
     } catch (error) {
         console.error(error);
@@ -58,8 +58,8 @@ router.post("/posts/:postId/comments", verifyToken, async (req, res) => {
         }
         const comment = await Comment.create({
             "content": req.body.content,
-            "postId": req.params.postId,
-            "userId": req.user.id
+            "PostId": req.params.postId,
+            "UserId": req.user.id
         });
         res.status(201).json(comment);
     } catch (error) {
@@ -68,7 +68,7 @@ router.post("/posts/:postId/comments", verifyToken, async (req, res) => {
     }
 });
 
-router.delete("/posts/:postId", verifyToken, async (req, res) => {
+router.delete("/posts/:postId", verifyToken, isAdmin, canDeletePost, async (req, res) => {
     try {
         const deleted = await Post.destroy({ where: { id: req.params.postId } });
         if (deleted) {
@@ -82,7 +82,7 @@ router.delete("/posts/:postId", verifyToken, async (req, res) => {
     }
 });
 
-router.delete("/comments/:commentId", verifyToken, async (req, res) => {
+router.delete("/comments/:commentId", verifyToken, isAdmin, canDeleteComment, async (req, res) => {
     try {
         const deleted = await Comment.destroy({ where: { id: req.params.commentId } });
         if (deleted) {

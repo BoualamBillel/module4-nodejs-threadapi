@@ -13,7 +13,8 @@ const secretKey = JWT_SECRET;
 export function generateToken(User) {
     const payload = {
         id: User.id,
-        username: User.username
+        username: User.username,
+        role: User.roleId
     };
     const options = {
         expiresIn: "1h"
